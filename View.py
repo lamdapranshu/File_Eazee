@@ -5,6 +5,7 @@ import tkinter.font as tkFont
 from tkinter import filedialog,messagebox
 import Controller
 from PIL import Image, ImageTk
+from plyer import notification
 
 
 
@@ -144,18 +145,20 @@ class Cleaner(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.controller = controller
         def showold():
+            print("121")
             self.listbox.delete(0,tk.END)
             a=0
             old_files = Controller1.model.old_files
             for i in old_files:
                 self.listbox.insert(0,i)
-                a+=1
 
+                a+=1
+            self.listbox.grid(row=3, column=2, padx=10, pady=10, columnspan=5)
 
 
         old_file_text = tk.StringVar("")
-        old_file_label = tk.Label(self,width=100,textvariable=old_file_text,relief="raised")
-        old_file_label.bind("Button-1",showold)
+        old_file_label = tk.Button(self,width=100,textvariable=old_file_text,relief="raised",command=showold)
+        #old_file_label.bind("Button",showold)
 
         Large_file_text = tk.StringVar("")
         Large_file_label = tk.Label(self,width=100,textvariable=Large_file_text,relief="raised")
@@ -170,7 +173,7 @@ class Cleaner(tk.Frame):
             self.dirname = filedialog.askdirectory(initialdir="/", title="Select A Directory")
             if(self.dirname!=None):
                 nF,nD = Controller1.cleaner(self.dirname)#nF---> No. of files cleaned#nD----> no of files deleted
-                duplicate_file_text.set("No. of Files Scanned"+str(nF)+"\n No. of files deleted"+str(nD))
+                duplicate_file_text.set("No. of Files Scanned "+str(nF)+"\n No. of files deleted "+str(nD))
                 duplicate_file_label.grid(row=2, column=2, padx=10, pady=10,columnspan=5)
                 presentor()
 
@@ -183,9 +186,9 @@ class Cleaner(tk.Frame):
             Large_file_text.set("Clean " + str(len(large_files)) + " Large Files")
             print(len(old_files))
             if len(old_files)>0:
-                old_file_label.grid(row=12, column=2, padx=10, pady=10,columnspan=5)
+                old_file_label.grid(row=6, column=2, padx=10, pady=10,columnspan=5)
             if len(large_files)>0:
-                Large_file_label.grid(row=6, column=2, padx=10, pady=10,columnspan=5)
+                Large_file_label.grid(row=12, column=2, padx=10, pady=10,columnspan=5)
 
 
 
@@ -205,7 +208,7 @@ class Cleaner(tk.Frame):
                           bg='#c4c4c4',
                           activestyle='dotbox',
                           font="Helvetica",
-                          fg="yellow",yscrollcommand=self.scrollbar.set)
+                          fg="black",yscrollcommand=self.scrollbar.set)
 
 
         class CircularProgressbar(object):
@@ -284,7 +287,7 @@ class SetBackup(tk.Frame):
         self.controller = controller
         self.dirname=None
         def fileDialog():
-            print("patel harami")
+            print("Executing")
             self.dirname = filedialog.askdirectory(initialdir="/", title="Select A Directory")
 
         def upload():
@@ -366,6 +369,7 @@ class InstentBackup(tk.Frame):
                     Controller1.authenticator()
                     try:
                         Controller1.backup(self.filename)
+                        notifi("Completed","Successfully Uploaded all the files on your drive")
                     except Exception as e:
                         print(e)
                         messagebox.showerror("Upload Failed", "Please Check Your Network")
@@ -429,6 +433,14 @@ class InstentBackup(tk.Frame):
         self.scrollbar.grid(row=2, column=9, padx=10, pady=10)
         remove_btn.grid(row=7, column=6, padx=5, pady=5)
         add_btn.grid(row=7, column=7, padx=5, pady=5)
+
+def notifi(title,message,appicon="C:/Users/lenovo/PycharmProjects/File_Eazee/Photos/fileeazee_YQC_icon.ico"):
+    notification.notify(
+        title=title,
+        message=message,
+        app_icon=appicon,
+        # displaying time
+        timeout=2)
 
 
 if __name__ == "__main__":
