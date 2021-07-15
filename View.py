@@ -3,6 +3,7 @@ from tkinter import ttk
 import tkinter.font as tkFont
 from tkinter import filedialog,messagebox
 import Controller
+import os
 #from PIL import Image, ImageTk
 
 
@@ -269,6 +270,7 @@ class InstentBackup(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.controller = controller
         self.filename=None
+        self.filelist=[]
 
         def browse_window():
             top = tk.Toplevel(bg='#6b9dc2')
@@ -289,17 +291,25 @@ class InstentBackup(tk.Frame):
                 except:
                     pass
         def fileDialog():
-            self.listbox.delete(0,tk.END)
+            for record in self.listbox.get_children():
+                self.listbox.delete(record)
+
+
             self.filename = filedialog.askopenfilenames(initialdir="/", title="Select Files to Upload")
+
             a=0
             for i in self.filename:
-                self.listbox.insert(0,i)
+                name=os.path.basename(i)
+                self.listbox.insert(parent="",index='end',iid=a,text="parent",values=(name,i,"Not Uploaded"))
                 a+=1
         def deleteSel():
-            selected=self.listbox.curselection()
-            for i in range(len(selected)):
+            for i in self.listbox.selection():
                 self.listbox.delete(i)
         def upload():
+            '''for line in self.listbox.get_children():
+
+                for value in self.listbox.item(line)['values']:
+                    self.filelist.append(value[1])'''
 
             print("Upload Begin")
             try:
@@ -313,7 +323,7 @@ class InstentBackup(tk.Frame):
                     print("Authentication Begins")
                     Controller1.authenticator()
                     try:
-                        Controller1.backup(self.filename)
+                        Controller1.backup(self.listbox)
                     except Exception as e:
                         print(e)
                         messagebox.showerror("Upload Failed", "Please Check Your Network")
@@ -327,12 +337,7 @@ class InstentBackup(tk.Frame):
 
 
         def addSel():
-            selected = self.listbox.curselection()
-            self.filename = filedialog.askopenfilenames(initialdir="/", title="Select Files to Upload")
-            a = 0
-            for i in self.filename:
-                self.listbox.insert(0, i)
-                a += 1
+            fileDialog()
 
         button = tk.Button(self, text="Back", height='1', width='5', bg='#c4c4c4',fg='#000000', borderwidth=2,
                            command=lambda: controller.show_frame("Backup"))
@@ -355,12 +360,22 @@ class InstentBackup(tk.Frame):
 
 
         self.scrollbar = tk.Scrollbar(self)
-        self.listbox = tk.Listbox(self, height=14,
-                          width=50,
-                          bg='#c4c4c4',
-                          activestyle='dotbox',
-                          font="Helvetica",
-                          fg="yellow",yscrollcommand=self.scrollbar.set)
+        self.listbox = ttk.Treeview(self, height=14,
+
+
+
+
+                          yscrollcommand=self.scrollbar.set)
+        self.listbox['columns'] = ("Filename","Path","Status")
+        self.listbox.column("#0", width=0, stretch=tk.NO)
+        self.listbox.column("Filename", width=100, minwidth=25)
+        self.listbox.column("Path", width=200, minwidth=25)
+        self.listbox.column("Status", width=100, minwidth=25)
+        self.listbox.heading('Filename', text='Filename')
+        self.listbox.heading('Path', text='Path')
+        self.listbox.heading('Status', text='Status')
+
+
 
 
         self.scrollbar.config(command=self.listbox.yview)
