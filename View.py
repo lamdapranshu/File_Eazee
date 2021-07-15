@@ -4,13 +4,62 @@ import tkinter.font as tkFont
 from tkinter import filedialog,messagebox
 import Controller
 import os
+import time
 #from PIL import Image, ImageTk
 
 
 
 
-Controller1=Controller.Controller("credfile.txt")
+def start(pb,value_label,root):
+    for i in range(100):
+        pb['value']=i
+        time.sleep(0.01)
+        root.update_idletasks()
+        value_label.configure(text="Loading.. "+str(i))
+        if i==99:
+            root.destroy()
 
+
+
+
+
+def splash():
+        splash_root = tk.Tk()
+        splash_root.title("")
+        splash_root.geometry("500x250")
+        splash_root.overrideredirect(True)
+        splash_root.eval('tk::PlaceWindow . center')
+        bg = tk.PhotoImage(file="C:/Users/lenovo/PycharmProjects/File_Eazee/Photos/App_logo.png")
+
+        # Show image using label
+        label1 = tk.Label(splash_root, image=bg)
+        label1.place(x=0, y=0)
+        pb = ttk.Progressbar(
+            splash_root,
+            orient='horizontal',
+            mode='determinate',
+            length=280
+        )
+        # place the progressbar
+        value_label = ttk.Label(splash_root)
+        value_label.pack()
+        pb.pack( side = tk.BOTTOM)
+        start(pb,value_label,splash_root)
+
+
+        # label
+
+
+        # start button
+
+
+        splash_root.mainloop()
+
+
+
+# progressbar
+splash()
+Controller1=Controller.Controller("credfile.txt")
 
 class fileeazeApp(tk.Tk):
 
@@ -22,6 +71,7 @@ class fileeazeApp(tk.Tk):
         # will be raised above the others
 
         container = tk.Frame(self)
+        self.eval('tk::PlaceWindow . center')
         container.pack(side="top", fill="both", expand=True)
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
@@ -51,6 +101,7 @@ class StartPage(tk.Frame):
 
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
+
         self.controller = controller
         controller.title('FileEaze')
         controller.geometry("700x500")
